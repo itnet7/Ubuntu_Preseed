@@ -4,6 +4,7 @@
 d-i debian-installer/locale string en_US
 d-i console-keymaps-at/keymap select us
 d-i debconf/priority string critical 
+
 # networking
 ####################################################################
  
@@ -62,7 +63,6 @@ d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
-## d-i partman/choose_partition select Finish partitioning and write changes to disk
 
 # timezone related
 ####################################################################
