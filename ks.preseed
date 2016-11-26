@@ -74,34 +74,23 @@ d-i     clock-setup/ntp boolean true
 # user info
 ####################################################################
 
-d-i     passwd/root-login       boolean true
-d-i     passwd/root-password-crypted    password $1$GohlAqRs$A.6oVIHONDL8PheE21z7D1
-d-i     passwd/user-fullname string Harris Temp
-d-i     passwd/username string harris
-d-i     passwd/user-password-crypted password $1$76hFICF0$wOzaMGi1YzzafKaKXJ6pF1
+d-i     passwd/root-login boolean true
+d-i     passwd/root-password-crypted password <mkpasswd -m, enter your password then copy here>
+d-i     passwd/user-fullname string Test Temp
+d-i     passwd/username string test_user
+d-i     passwd/user-password-crypted password $1$erKw9zvQ$lTYrNMxy.lMGPL6BxpbED/
 d-i     user-setup/encrypt-home boolean false
-d-i     user-setup/allow-password-weak  boolean true
-d-i     passwd/user-default-groups      string adm cdrom dialout lpadmin plugdev admin
+d-i     user-setup/allow-password-weak boolean true
+d-i     passwd/user-default-groups string adm cdrom dialout lpadmin plugdev
 
 # misc
 ####################################################################
-
-#d-i preseed/late_command string apt-install -y tcsh vim openssh-server
-##d-i preseed/late_command string in-target echo "harris	ALL=(ALL) ALL">>/target/etc/sudoers;sync
 
 popularity-contest popularity-contest/participate boolean false
 
 ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula boolean true
 
-# d-i pkgsel/include string openssh-server \
-# byobu \
-# meld \
-# vim \
-# tcsh
-# 
-# d-i pkgsel/upgrade select full-upgrade
-
-# Grub
+# grub setup
 ####################################################################
 
 d-i grub-installer/bootdev string /dev/sda
@@ -115,7 +104,7 @@ d-i finish-install/reboot_in_progress note
 ubiquity ubiquity/success_command string \
   sed -i -e 's/dns=dnsmasq/#dns=dnsmasq/' /target/etc/NetworkManager/NetworkManager.conf ;\
   cp -a /cdrom/scripts/ /target/root/ ;\
-  echo 'harris ALL=(ALL) ALL' > /target/etc/sudoers.d/harris; \
-  in-target chmod 440 /etc/sudoers.d/harris ; \
+  echo 'harris ALL=(ALL) ALL' > /target/etc/sudoers.d/test_user; \
+  in-target chmod 440 /etc/sudoers.d/test_user ; \
   in-target apt-get -y install openssh-server byobu meld vim tcsh;
   
