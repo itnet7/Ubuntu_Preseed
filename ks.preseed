@@ -1,0 +1,121 @@
+# keyboard and locale settings
+####################################################################
+ 
+d-i debian-installer/locale string en_US
+d-i console-keymaps-at/keymap select us
+d-i debconf/priority string critical 
+# networking
+####################################################################
+ 
+d-i netcfg/disable_dhcp boolean false
+d-i netcfg/get_hostname string Ubuntu-Pressed
+d-i netcfg/get_domain string example.com
+d-i netcfg/choose_interface select eth0
+
+# partitioning
+####################################################################
+
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string lvm
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-lvm/device_remove_lvm_span boolean true
+d-i partman-auto/purge_lvm_from_device  boolean true
+d-i partman-auto-lvm/new_vg_name string vg00
+d-i partman-auto/expert_recipe string                         \
+      boot-root ::                                            \
+              40 300 300 ext4                                 \
+                      $primary{ }                             \
+                      $bootable{ }                            \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ /boot }                     \
+              .                                               \
+              2000 10000 1000000000 ext4                      \
+                      $lvmok{ }                               \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ / }                         \
+              .                                               \
+              2000 1000 10000 ext4                            \
+                      $lvmok{ }                               \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ /var }                      \
+              .                                               \
+              2000 1000 60000 ext4                            \
+                      $lvmok{ }                               \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ /scratchnobackup }          \
+              .                                               \
+              2000 1000 30000 ext4                            \
+                      $lvmok{ }                               \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ /tmp }                      \
+              .                                               \
+              8000 8000 200% linux-swap                       \
+                      $lvmok{ }                               \
+                      method{ swap } format{ }                \
+              .
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+## d-i partman/choose_partition select Finish partitioning and write changes to disk
+
+# timezone related
+####################################################################
+
+d-i     clock-setup/utc boolean true
+d-i     time/zone string US/Eastern
+d-i     clock-setup/ntp boolean true
+
+# user info
+####################################################################
+
+d-i     passwd/root-login       boolean true
+d-i     passwd/root-password-crypted    password $1$GohlAqRs$A.6oVIHONDL8PheE21z7D1
+d-i     passwd/user-fullname string Harris Temp
+d-i     passwd/username string harris
+d-i     passwd/user-password-crypted password $1$76hFICF0$wOzaMGi1YzzafKaKXJ6pF1
+d-i     user-setup/encrypt-home boolean false
+d-i     user-setup/allow-password-weak  boolean true
+d-i     passwd/user-default-groups      string adm cdrom dialout lpadmin plugdev admin
+
+# misc
+####################################################################
+
+#d-i preseed/late_command string apt-install -y tcsh vim openssh-server
+##d-i preseed/late_command string in-target echo "harris	ALL=(ALL) ALL">>/target/etc/sudoers;sync
+
+popularity-contest popularity-contest/participate boolean false
+
+ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula boolean true
+
+# d-i pkgsel/include string openssh-server \
+# byobu \
+# meld \
+# vim \
+# tcsh
+# 
+# d-i pkgsel/upgrade select full-upgrade
+
+# Grub
+####################################################################
+
+d-i grub-installer/bootdev string /dev/sda
+d-i grub-installer/grub2_instead_of_grub_legacy boolean true
+d-i grub-installer/only_debian boolean true
+d-i finish-install/reboot_in_progress note
+
+# Custom Commands
+####################################################################
+
+ubiquity ubiquity/success_command string \
+  sed -i -e 's/dns=dnsmasq/#dns=dnsmasq/' /target/etc/NetworkManager/NetworkManager.conf ;\
+  cp -a /cdrom/scripts/ /target/root/ ;\
+  echo 'harris ALL=(ALL) ALL' > /target/etc/sudoers.d/harris; \
+  in-target chmod 440 /etc/sudoers.d/harris ; \
+  in-target apt-get -y install openssh-server byobu meld vim tcsh;
+  
