@@ -1,2 +1,2 @@
 # Ubuntu_Preseed
-Pressed Xenial Desktop
+Preseed Xenial Desktop
