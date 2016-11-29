@@ -24,7 +24,7 @@ d-i partman-auto/purge_lvm_from_device  boolean true
 d-i partman-auto-lvm/new_vg_name string vg00
 d-i partman-auto/expert_recipe string                         \
       boot-root ::                                            \
-              40 300 300 ext4                                 \
+              1024 1024 300 ext4                                 \
                       $primary{ }                             \
                       $bootable{ }                            \
                       method{ format } format{ }              \
@@ -37,19 +37,19 @@ d-i partman-auto/expert_recipe string                         \
                       use_filesystem{ } filesystem{ ext4 }    \
                       mountpoint{ / }                         \
               .                                               \
-              2000 1000 10000 ext4                            \
+              10240 10240 10000 ext4                          \
                       $lvmok{ }                               \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
                       mountpoint{ /var }                      \
               .                                               \
-              2000 1000 60000 ext4                            \
+              10240 10240 60000 ext4                          \
                       $lvmok{ }                               \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
-                      mountpoint{ /scratchnobackup }          \
+                      mountpoint{ /var/tmp }                  \
               .                                               \
-              2000 1000 30000 ext4                            \
+              15360 15360 30000 ext4                          \
                       $lvmok{ }                               \
                       method{ format } format{ }              \
                       use_filesystem{ } filesystem{ ext4 }    \
@@ -108,5 +108,10 @@ ubiquity ubiquity/success_command string \
   cp -a /cdrom/scripts/ /target/root/ ;\
   echo 'test_user ALL=(ALL) ALL' > /target/etc/sudoers.d/test_user; \
   in-target chmod 440 /etc/sudoers.d/test_user ; \
-  in-target apt-get -y install openssh-server byobu meld vim tcsh;
+  in-target apt-get -y install openssh-server byobu meld vim tcsh; \
+  in-target dpkg-divert \
+  --divert /usr/share/applications/ubuntu-amazon-default.desktop.diverted \
+  --local \
+  --rename \
+  /usr/share/applications/ubuntu-amazon-default.desktop;
   
